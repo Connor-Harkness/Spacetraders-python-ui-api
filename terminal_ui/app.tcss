@@ -182,3 +182,73 @@ ProgressBar {
     background: #313244;
     bar-color: #a6e3a1;
 }
+
+/* Shipyard styles */
+.shipyard-container {
+    background: #1e1e2e;
+    padding: 1;
+}
+
+.system-selector {
+    background: #313244;
+    padding: 1;
+    margin-bottom: 1;
+    border: solid #89b4fa;
+    border-title-color: #f9e2af;
+}
+
+.shipyard-content {
+    background: #1e1e2e;
+    padding: 1;
+}
+
+.shipyard-scrollable {
+    background: #1e1e2e;
+    padding: 1;
+}
+
+.shipyard-card {
+    background: #313244;
+    color: #cdd6f4;
+    margin-bottom: 1;
+    border: solid #89b4fa;
+}
+
+.shipyard-card-container {
+    background: #1e1e2e;
+    margin-bottom: 1;
+}
+
+.shipyard-button {
+    background: #89b4fa;
+    color: #1e1e2e;
+    margin-right: 1;
+}
+
+.shipyard-button:hover {
+    background: #74c7ec;
+}
+
+.shipyard-header {
+    text-style: bold;
+    color: #f9e2af;
+    margin-bottom: 1;
+}
+
+.shipyard-label {
+    text-style: bold;
+    color: #cdd6f4;
+    margin-bottom: 1;
+}
+
+.shipyard-info {
+    color: #94e2d5;
+    text-style: italic;
+    margin: 1;
+}
+
+.system-select {
+    background: #45475a;
+    color: #cdd6f4;
+    border: solid #89b4fa;
+}

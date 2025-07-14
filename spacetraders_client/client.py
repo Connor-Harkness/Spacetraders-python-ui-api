@@ -449,6 +449,29 @@ class SpaceTradersClient:
             "events": response["data"].get("events", []),
         }
     
+    async def refuel_ship(self, ship_symbol: str, units: Optional[int] = None) -> Dict[str, Any]:
+        """
+        Refuel a ship at its current location.
+        
+        Args:
+            ship_symbol: The ship symbol to refuel
+            units: Optional number of units to refuel (refuels to max if not specified)
+            
+        Returns:
+            Dictionary containing updated fuel information and transaction details.
+        """
+        json_data = {}
+        if units is not None:
+            json_data["units"] = units
+        
+        response = await self._request("POST", f"/my/ships/{ship_symbol}/refuel", json_data=json_data)
+        
+        return {
+            "fuel": response["data"]["fuel"],
+            "transaction": response["data"]["transaction"],
+            "agent": response["data"]["agent"],
+        }
+    
     # ============================================================================
     # System Endpoints
     # ============================================================================

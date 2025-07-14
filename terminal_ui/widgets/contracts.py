@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 from textual.widgets import Static, Button, Label
 from textual.containers import Container, Horizontal, Vertical, ScrollableContainer
 from textual.reactive import reactive
+from textual.message import Message
 from rich.text import Text
 from rich.table import Table
 from rich.panel import Panel
@@ -20,6 +21,31 @@ class ContractWidget(Static):
     """Contracts widget for contract management."""
     
     contracts_data = reactive(None)
+    
+    # Custom messages for contract actions
+    class ContractAccept(Message):
+        """Message sent when accept contract is clicked."""
+        def __init__(self, contract_id: str):
+            self.contract_id = contract_id
+            super().__init__()
+    
+    class ContractFulfill(Message):
+        """Message sent when fulfill contract is clicked."""
+        def __init__(self, contract_id: str):
+            self.contract_id = contract_id
+            super().__init__()
+    
+    class ContractAutomate(Message):
+        """Message sent when automate contract is clicked."""
+        def __init__(self, contract_id: str):
+            self.contract_id = contract_id
+            super().__init__()
+    
+    class ContractDetails(Message):
+        """Message sent when view contract details is clicked."""
+        def __init__(self, contract_id: str):
+            self.contract_id = contract_id
+            super().__init__()
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -150,12 +176,21 @@ class ContractWidget(Static):
         # Action buttons
         buttons = []
         if not contract.accepted and not contract.fulfilled:
-            buttons.append(Button("Accept", variant="primary", classes="contract-button"))
+            accept_btn = Button("Accept", variant="primary", classes="contract-button")
+            accept_btn.id = f"accept-{contract.id}"
+            buttons.append(accept_btn)
         elif contract.accepted and not contract.fulfilled:
-            buttons.append(Button("Fulfill", variant="success", classes="contract-button"))
-            buttons.append(Button("Automate", variant="primary", classes="contract-button"))
+            fulfill_btn = Button("Fulfill", variant="success", classes="contract-button")
+            fulfill_btn.id = f"fulfill-{contract.id}"
+            buttons.append(fulfill_btn)
+            
+            automate_btn = Button("Automate", variant="primary", classes="contract-button")
+            automate_btn.id = f"automate-{contract.id}"
+            buttons.append(automate_btn)
         
-        buttons.append(Button("Details", classes="contract-button"))
+        details_btn = Button("Details", classes="contract-button")
+        details_btn.id = f"details-{contract.id}"
+        buttons.append(details_btn)
         
         button_row = Horizontal(*buttons) if buttons else Container()
         
@@ -167,3 +202,25 @@ class ContractWidget(Static):
         )
         
         return card
+
+    async def on_button_pressed(self, event: Button.Pressed) -> None:
+        """Handle contract button presses."""
+        button_id = event.button.id
+        if not button_id:
+            return
+            
+        # Parse the button ID to get action and contract ID
+        parts = button_id.split("-", 1)
+        if len(parts) != 2:
+            return
+            
+        action, contract_id = parts
+        
+        if action == "accept":
+            await self.post_message(self.ContractAccept(contract_id))
+        elif action == "fulfill":
+            await self.post_message(self.ContractFulfill(contract_id))
+        elif action == "automate":
+            await self.post_message(self.ContractAutomate(contract_id))
+        elif action == "details":
+            await self.post_message(self.ContractDetails(contract_id))
