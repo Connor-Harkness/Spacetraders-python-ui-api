@@ -65,29 +65,29 @@ class AgentWidget(Static):
         """Create the agent information panel."""
         # Agent details
         content = Text()
-        content.append("Agent Information\\n", style="bold magenta")
-        content.append("=" * 40 + "\\n", style="dim")
+        content.append("Agent Information\n", style="bold magenta")
+        content.append("=" * 40 + "\n", style="dim")
         
         content.append(f"Symbol: ", style="bold")
-        content.append(f"{self.agent_data.symbol}\\n", style="cyan")
+        content.append(f"{self.agent_data.symbol}\n", style="cyan")
         
         content.append(f"Account ID: ", style="bold")
-        content.append(f"{self.agent_data.accountId}\\n", style="dim")
+        content.append(f"{self.agent_data.accountId}\n", style="dim")
         
         content.append(f"Credits: ", style="bold")
-        content.append(f"{self.agent_data.credits:,}\\n", style="green")
+        content.append(f"{self.agent_data.credits:,}\n", style="green")
         
         content.append(f"Headquarters: ", style="bold")
-        content.append(f"{self.agent_data.headquarters}\\n", style="blue")
+        content.append(f"{self.agent_data.headquarters}\n", style="blue")
         
         content.append(f"Starting Faction: ", style="bold")
-        content.append(f"{self.agent_data.startingFaction}\\n", style="magenta")
+        content.append(f"{self.agent_data.startingFaction}\n", style="magenta")
         
         content.append(f"Ship Count: ", style="bold")
-        content.append(f"{self.agent_data.shipCount}\\n", style="yellow")
+        content.append(f"{self.agent_data.shipCount}\n", style="yellow")
         
         # Credit status analysis
-        content.append("\\nCredit Status:\\n", style="bold")
+        content.append("\nCredit Status:\n", style="bold")
         if self.agent_data.credits < 0:
             content.append("⚠️  OVERDRAWN", style="red bold")
         elif self.agent_data.credits < 10000:
@@ -108,14 +108,14 @@ class AgentWidget(Static):
         """Create the settings/actions panel."""
         # Settings content
         content = Text()
-        content.append("Agent Settings & Actions\\n", style="bold cyan")
-        content.append("=" * 40 + "\\n", style="dim")
+        content.append("Agent Settings & Actions\n", style="bold cyan")
+        content.append("=" * 40 + "\n", style="dim")
         
-        content.append("• Automation Settings\\n", style="white")
-        content.append("• Fleet Management\\n", style="white")
-        content.append("• Contract Preferences\\n", style="white")
-        content.append("• Trading Strategies\\n", style="white")
-        content.append("• Refuel Automation\\n", style="white")
+        content.append("• Automation Settings\n", style="white")
+        content.append("• Fleet Management\n", style="white")
+        content.append("• Contract Preferences\n", style="white")
+        content.append("• Trading Strategies\n", style="white")
+        content.append("• Refuel Automation\n", style="white")
         
         # Action buttons
         buttons = Horizontal(
