@@ -126,15 +126,19 @@ class ShipWidget(Static):
             
             # Responsive location display
             waypoint_symbol = ship.nav.waypointSymbol
-            if len(waypoint_symbol) > 20:
-                waypoint_symbol = waypoint_symbol[-20:]  # Show last 20 characters
+            if len(waypoint_symbol.root) > 20:
+                waypoint_symbol = waypoint_symbol.root[-20:]  # Show last 20 characters
+            else:
+                waypoint_symbol = waypoint_symbol.root
             status_text.append(f"Location: ", style="bold")
             status_text.append(f"{waypoint_symbol}\n", style="blue")
             
             # Responsive system display
             system_symbol = ship.nav.systemSymbol
-            if len(system_symbol) > 15:
-                system_symbol = system_symbol[-15:]  # Show last 15 characters
+            if len(system_symbol.root) > 15:
+                system_symbol = system_symbol.root[-15:]  # Show last 15 characters
+            else:
+                system_symbol = system_symbol.root
             status_text.append(f"System: ", style="bold")
             status_text.append(f"{system_symbol}\n", style="dim")
         

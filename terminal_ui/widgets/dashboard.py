@@ -153,7 +153,7 @@ class DashboardWidget(Static):
                 status_color = "green" if ship.nav.status == "DOCKED" else "yellow" if ship.nav.status == "IN_TRANSIT" else "red"
                 # Truncate long ship names and waypoint names for small screens
                 ship_name = ship.symbol[:12] + "..." if len(ship.symbol) > 15 else ship.symbol
-                waypoint_name = ship.nav.waypointSymbol[-10:] if len(ship.nav.waypointSymbol) > 10 else ship.nav.waypointSymbol
+                waypoint_name = ship.nav.waypointSymbol.root[-10:] if len(ship.nav.waypointSymbol.root) > 10 else ship.nav.waypointSymbol.root
                 
                 content.append(f"  {ship_name}: ", style="white")
                 content.append(f"{ship.nav.status}", style=status_color)
