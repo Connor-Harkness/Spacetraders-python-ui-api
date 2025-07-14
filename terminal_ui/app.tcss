@@ -1,0 +1,184 @@
+/* SpaceTraders Terminal UI Styles */
+
+/* Main layout */
+Screen {
+    background: #1e1e2e;
+    color: #cdd6f4;
+}
+
+/* Header and Footer */
+Header {
+    background: #89b4fa;
+    color: #1e1e2e;
+    text-style: bold;
+}
+
+Footer {
+    background: #313244;
+    color: #f38ba8;
+}
+
+/* Tabs */
+TabbedContent {
+    background: #1e1e2e;
+}
+
+TabPane {
+    background: #1e1e2e;
+    padding: 1;
+}
+
+Tabs {
+    background: #313244;
+}
+
+Tab {
+    background: #313244;
+    color: #cdd6f4;
+    margin-right: 1;
+    padding: 0 2;
+}
+
+Tab:hover {
+    background: #585b70;
+}
+
+Tab.-active {
+    background: #89b4fa;
+    color: #1e1e2e;
+    text-style: bold;
+}
+
+/* Dashboard styles */
+.dashboard-stats {
+    background: #313244;
+    border: solid #89b4fa;
+    margin: 1;
+    padding: 1;
+}
+
+.dashboard-overview {
+    background: #11111b;
+    border: solid #f38ba8;
+    margin: 1;
+    padding: 1;
+}
+
+/* Ship styles */
+.ship-card {
+    background: #313244;
+    border: solid #a6e3a1;
+    margin: 1;
+    padding: 1;
+}
+
+.ship-header {
+    color: #a6e3a1;
+    text-style: bold;
+}
+
+.ship-status {
+    color: #f9e2af;
+}
+
+.ship-location {
+    color: #89b4fa;
+}
+
+/* Contract styles */
+.contract-card {
+    background: #313244;
+    border: solid #fab387;
+    margin: 1;
+    padding: 1;
+}
+
+.contract-header {
+    color: #fab387;
+    text-style: bold;
+}
+
+.contract-active {
+    border: solid #a6e3a1;
+}
+
+.contract-accepted {
+    color: #a6e3a1;
+}
+
+.contract-fulfilled {
+    color: #94e2d5;
+}
+
+/* Agent styles */
+.agent-info {
+    background: #313244;
+    border: solid #f5c2e7;
+    margin: 1;
+    padding: 1;
+}
+
+.agent-header {
+    color: #f5c2e7;
+    text-style: bold;
+}
+
+/* Status indicators */
+.status-good {
+    color: #a6e3a1;
+    text-style: bold;
+}
+
+.status-warning {
+    color: #f9e2af;
+    text-style: bold;
+}
+
+.status-error {
+    color: #f38ba8;
+    text-style: bold;
+}
+
+/* Buttons */
+Button {
+    background: #585b70;
+    color: #cdd6f4;
+    border: solid #89b4fa;
+    margin: 1;
+    padding: 0 2;
+}
+
+Button:hover {
+    background: #89b4fa;
+    color: #1e1e2e;
+}
+
+Button.-primary {
+    background: #a6e3a1;
+    color: #1e1e2e;
+}
+
+Button.-primary:hover {
+    background: #94e2d5;
+}
+
+Button.-danger {
+    background: #f38ba8;
+    color: #1e1e2e;
+}
+
+Button.-danger:hover {
+    background: #eba0ac;
+}
+
+/* Scrollable content */
+.scrollable {
+    scrollbar-background: #313244;
+    scrollbar-color: #89b4fa;
+}
+
+/* Progress bars */
+ProgressBar {
+    background: #313244;
+    bar-color: #a6e3a1;
+}
