@@ -18,7 +18,7 @@ from rich.panel import Panel
 from rich.console import Console
 
 from spacetraders_client import SpaceTradersClient, SpaceTradersError
-from .widgets import DashboardWidget, ShipWidget, ContractWidget, AgentWidget
+from .widgets import DashboardWidget, ShipWidget, ContractWidget, AgentWidget, ShipyardWidget
 from automation import AutomationManager
 
 
@@ -34,6 +34,7 @@ class SpaceTradersApp(App):
         Binding("s", "show_ships", "Ships"),
         Binding("c", "show_contracts", "Contracts"),
         Binding("a", "show_agent", "Agent"),
+        Binding("y", "show_shipyard", "Shipyard"),
         Binding("r", "refresh", "Refresh"),
     ]
     
@@ -42,6 +43,8 @@ class SpaceTradersApp(App):
     agent_data = reactive(None)
     ships_data = reactive(None)
     contracts_data = reactive(None)
+    systems_data = reactive(None)
+    shipyards_data = reactive(None)
     last_refresh = reactive(datetime.now())
     
     def __init__(self, token: str):
@@ -66,6 +69,9 @@ class SpaceTradersApp(App):
                 
             with TabPane("Agent", id="agent"):
                 yield AgentWidget(id="agent_content")
+                
+            with TabPane("Shipyard", id="shipyard"):
+                yield ShipyardWidget(id="shipyard_content")
         
         yield Footer()
     
@@ -109,6 +115,10 @@ class SpaceTradersApp(App):
             contracts_response = await self.client.get_contracts(limit=20)
             self.contracts_data = contracts_response["data"]
             
+            # Get systems data (for shipyard functionality)
+            systems_response = await self.client.get_systems(limit=20)
+            self.systems_data = systems_response["data"]
+            
             self.last_refresh = datetime.now()
             
             # Update widgets
@@ -116,11 +126,13 @@ class SpaceTradersApp(App):
             ships_widget = self.query_one("#ships_content", ShipWidget)
             contracts_widget = self.query_one("#contracts_content", ContractWidget)
             agent_widget = self.query_one("#agent_content", AgentWidget)
+            shipyard_widget = self.query_one("#shipyard_content", ShipyardWidget)
             
             await dashboard.update_data(self.agent_data, self.ships_data, self.contracts_data)
             await ships_widget.update_data(self.ships_data)
             await contracts_widget.update_data(self.contracts_data)
             await agent_widget.update_data(self.agent_data)
+            await shipyard_widget.update_data(self.systems_data, self.shipyards_data)
             
         except SpaceTradersError as e:
             self.notify(f"Failed to refresh data: {e.message}", title="Error", severity="error")
@@ -150,6 +162,11 @@ class SpaceTradersApp(App):
         """Show the agent tab."""
         tabbed_content = self.query_one(TabbedContent)
         tabbed_content.active = "agent"
+        
+    def action_show_shipyard(self) -> None:
+        """Show the shipyard tab."""
+        tabbed_content = self.query_one(TabbedContent)
+        tabbed_content.active = "shipyard"
         
     async def action_refresh(self) -> None:
         """Refresh all data."""
@@ -297,6 +314,104 @@ class SpaceTradersApp(App):
             
         except Exception as e:
             self.notify(f"Failed to start automation: {str(e)}", title="Error", severity="error")
+    
+    # Shipyard action handlers
+    async def on_shipyard_widget_ship_purchase(self, event: ShipyardWidget.ShipPurchase) -> None:
+        """Handle ship purchase action."""
+        try:
+            self.notify(f"Purchasing {event.ship_type} for {event.price:,} credits...", title="Ship Purchase")
+            response = await self.client.purchase_ship(event.ship_type, event.waypoint_symbol)
+            
+            # Show success message with ship details
+            ship_name = response["ship"].symbol
+            agent_credits = response["agent"].credits
+            
+            self.notify(f"Successfully purchased {ship_name}! Remaining credits: {agent_credits:,}", title="Purchase Success")
+            
+            # Refresh data to show the new ship
+            await self.refresh_data()
+            
+        except SpaceTradersError as e:
+            self.notify(f"Failed to purchase ship: {e.message}", title="Error", severity="error")
+        except Exception as e:
+            self.notify(f"Unexpected error: {str(e)}", title="Error", severity="error")
+    
+    async def on_shipyard_widget_shipyard_refresh(self, event: ShipyardWidget.ShipyardRefresh) -> None:
+        """Handle shipyard refresh action."""
+        try:
+            if not event.waypoint_symbol:
+                # Refresh all shipyards for a system
+                await self.refresh_system_shipyards(event.system_symbol)
+            else:
+                # Refresh specific shipyard
+                await self.refresh_specific_shipyard(event.system_symbol, event.waypoint_symbol)
+        except Exception as e:
+            self.notify(f"Failed to refresh shipyard: {str(e)}", title="Error", severity="error")
+    
+    async def refresh_system_shipyards(self, system_symbol: str) -> None:
+        """Refresh shipyards for a specific system."""
+        try:
+            self.notify(f"Loading shipyards for system {system_symbol}...", title="Shipyard Refresh")
+            
+            # Get all waypoints in the system
+            waypoints_response = await self.client.get_system_waypoints(system_symbol, limit=50)
+            waypoints = waypoints_response["data"]
+            
+            # Find waypoints with shipyards
+            shipyard_waypoints = []
+            for waypoint in waypoints:
+                if waypoint.traits:
+                    for trait in waypoint.traits:
+                        if trait.symbol == "SHIPYARD":
+                            shipyard_waypoints.append(waypoint)
+                            break
+            
+            # Get shipyard data for each waypoint
+            shipyards = {}
+            for waypoint in shipyard_waypoints:
+                try:
+                    shipyard = await self.client.get_shipyard(system_symbol, waypoint.symbol)
+                    shipyards[waypoint.symbol] = shipyard
+                except SpaceTradersError:
+                    # Skip waypoints where we can't get shipyard data
+                    continue
+            
+            # Update shipyards data
+            self.shipyards_data = shipyards
+            
+            # Update shipyard widget
+            shipyard_widget = self.query_one("#shipyard_content", ShipyardWidget)
+            await shipyard_widget.update_data(self.systems_data, self.shipyards_data)
+            
+            self.notify(f"Found {len(shipyards)} shipyards in {system_symbol}", title="Shipyard Refresh")
+            
+        except SpaceTradersError as e:
+            self.notify(f"Failed to refresh shipyards: {e.message}", title="Error", severity="error")
+        except Exception as e:
+            self.notify(f"Unexpected error: {str(e)}", title="Error", severity="error")
+    
+    async def refresh_specific_shipyard(self, system_symbol: str, waypoint_symbol: str) -> None:
+        """Refresh a specific shipyard."""
+        try:
+            self.notify(f"Refreshing shipyard {waypoint_symbol}...", title="Shipyard Refresh")
+            
+            shipyard = await self.client.get_shipyard(system_symbol, waypoint_symbol)
+            
+            # Update shipyards data
+            if not self.shipyards_data:
+                self.shipyards_data = {}
+            self.shipyards_data[waypoint_symbol] = shipyard
+            
+            # Update shipyard widget
+            shipyard_widget = self.query_one("#shipyard_content", ShipyardWidget)
+            await shipyard_widget.update_data(self.systems_data, self.shipyards_data)
+            
+            self.notify(f"Shipyard {waypoint_symbol} refreshed", title="Shipyard Refresh")
+            
+        except SpaceTradersError as e:
+            self.notify(f"Failed to refresh shipyard: {e.message}", title="Error", severity="error")
+        except Exception as e:
+            self.notify(f"Unexpected error: {str(e)}", title="Error", severity="error")
 
 
 def main():
