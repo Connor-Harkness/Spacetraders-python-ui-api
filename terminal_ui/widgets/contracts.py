@@ -82,29 +82,29 @@ class ContractWidget(Static):
         else:
             status_text.append("AVAILABLE", style="blue")
         
-        status_text.append("\\n")
+        status_text.append("\n")
         status_text.append(f"Faction: ", style="bold")
-        status_text.append(f"{contract.factionSymbol}\\n", style="magenta")
+        status_text.append(f"{contract.factionSymbol}\n", style="magenta")
         
         # Payment info
         payment_text = Text()
         if contract.terms.payment:
-            payment_text.append(f"Payment:\\n", style="bold")
+            payment_text.append(f"Payment:\n", style="bold")
             payment_text.append(f"  On Accept: ", style="bold")
-            payment_text.append(f"{contract.terms.payment.onAccepted:,} credits\\n", style="green")
+            payment_text.append(f"{contract.terms.payment.onAccepted:,} credits\n", style="green")
             payment_text.append(f"  On Fulfill: ", style="bold")
-            payment_text.append(f"{contract.terms.payment.onFulfilled:,} credits\\n", style="green")
+            payment_text.append(f"{contract.terms.payment.onFulfilled:,} credits\n", style="green")
         
         # Delivery requirements
         delivery_text = Text()
         if contract.terms.deliver:
-            delivery_text.append(f"Deliveries:\\n", style="bold")
+            delivery_text.append(f"Deliveries:\n", style="bold")
             for delivery in contract.terms.deliver:
                 progress = delivery.unitsFulfilled / delivery.unitsRequired if delivery.unitsRequired > 0 else 0
                 progress_color = "green" if progress >= 1.0 else "yellow" if progress > 0 else "red"
                 delivery_text.append(f"  {delivery.tradeSymbol}: ", style="white")
                 delivery_text.append(f"{delivery.unitsFulfilled}/{delivery.unitsRequired}", style=progress_color)
-                delivery_text.append(f" → {delivery.destinationSymbol}\\n", style="blue")
+                delivery_text.append(f" → {delivery.destinationSymbol}\n", style="blue")
         
         # Deadline info
         deadline_text = Text()
@@ -120,20 +120,20 @@ class ContractWidget(Static):
         else:
             deadline_color = "green"
         
-        deadline_text.append(f"{deadline_str}\\n", style=deadline_color)
+        deadline_text.append(f"{deadline_str}\n", style=deadline_color)
         deadline_text.append(f"Time remaining: ", style="bold")
         deadline_text.append(f"{time_remaining.days} days, {time_remaining.seconds // 3600} hours", style=deadline_color)
         
         # Combine all info
         full_content = Text()
         full_content.append(header)
-        full_content.append("\\n\\n")
+        full_content.append("\n\n")
         full_content.append(status_text)
-        full_content.append("\\n")
+        full_content.append("\n")
         full_content.append(payment_text)
-        full_content.append("\\n")
+        full_content.append("\n")
         full_content.append(delivery_text)
-        full_content.append("\\n")
+        full_content.append("\n")
         full_content.append(deadline_text)
         
         # Determine card style based on status
