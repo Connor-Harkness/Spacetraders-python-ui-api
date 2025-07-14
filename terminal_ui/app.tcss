@@ -180,7 +180,7 @@ Button.-danger:hover {
 /* Progress bars */
 ProgressBar {
     background: #313244;
-    bar-color: #a6e3a1;
+    color: #a6e3a1;
 }
 
 /* Shipyard styles */
