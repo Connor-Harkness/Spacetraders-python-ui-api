@@ -7,6 +7,7 @@ from typing import Optional, List
 from textual.widgets import Static, Button, Label
 from textual.containers import Container, Horizontal, Vertical, ScrollableContainer
 from textual.reactive import reactive
+from textual.message import Message
 from rich.text import Text
 from rich.table import Table
 from rich.panel import Panel
@@ -19,6 +20,37 @@ class ShipWidget(Static):
     """Ships widget for fleet management."""
     
     ships_data = reactive(None)
+    
+    # Custom messages for ship actions
+    class ShipNavigate(Message):
+        """Message sent when navigate ship is clicked."""
+        def __init__(self, ship_symbol: str):
+            self.ship_symbol = ship_symbol
+            super().__init__()
+    
+    class ShipDock(Message):
+        """Message sent when dock ship is clicked."""
+        def __init__(self, ship_symbol: str):
+            self.ship_symbol = ship_symbol
+            super().__init__()
+    
+    class ShipOrbit(Message):
+        """Message sent when orbit ship is clicked."""
+        def __init__(self, ship_symbol: str):
+            self.ship_symbol = ship_symbol
+            super().__init__()
+    
+    class ShipRefuel(Message):
+        """Message sent when refuel ship is clicked."""
+        def __init__(self, ship_symbol: str):
+            self.ship_symbol = ship_symbol
+            super().__init__()
+    
+    class ShipAutomate(Message):
+        """Message sent when automate ship is clicked."""
+        def __init__(self, ship_symbol: str):
+            self.ship_symbol = ship_symbol
+            super().__init__()
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -119,12 +151,27 @@ class ShipWidget(Static):
         full_content.append(specs_text)
         
         # Action buttons
+        navigate_btn = Button("Navigate", variant="primary", classes="ship-button")
+        navigate_btn.id = f"navigate-{ship.symbol}"
+        
+        dock_btn = Button("Dock", classes="ship-button")
+        dock_btn.id = f"dock-{ship.symbol}"
+        
+        orbit_btn = Button("Orbit", classes="ship-button")
+        orbit_btn.id = f"orbit-{ship.symbol}"
+        
+        refuel_btn = Button("Refuel", classes="ship-button")
+        refuel_btn.id = f"refuel-{ship.symbol}"
+        
+        automate_btn = Button("Automate", variant="success", classes="ship-button")
+        automate_btn.id = f"automate-{ship.symbol}"
+        
         buttons = Horizontal(
-            Button("Navigate", variant="primary", classes="ship-button"),
-            Button("Dock", classes="ship-button"),
-            Button("Orbit", classes="ship-button"),
-            Button("Refuel", classes="ship-button"),
-            Button("Automate", variant="success", classes="ship-button"),
+            navigate_btn,
+            dock_btn,
+            orbit_btn,
+            refuel_btn,
+            automate_btn,
         )
         
         # Create the card
@@ -135,3 +182,27 @@ class ShipWidget(Static):
         )
         
         return card
+
+    async def on_button_pressed(self, event: Button.Pressed) -> None:
+        """Handle ship button presses."""
+        button_id = event.button.id
+        if not button_id:
+            return
+            
+        # Parse the button ID to get action and ship symbol
+        parts = button_id.split("-", 1)
+        if len(parts) != 2:
+            return
+            
+        action, ship_symbol = parts
+        
+        if action == "navigate":
+            await self.post_message(self.ShipNavigate(ship_symbol))
+        elif action == "dock":
+            await self.post_message(self.ShipDock(ship_symbol))
+        elif action == "orbit":
+            await self.post_message(self.ShipOrbit(ship_symbol))
+        elif action == "refuel":
+            await self.post_message(self.ShipRefuel(ship_symbol))
+        elif action == "automate":
+            await self.post_message(self.ShipAutomate(ship_symbol))
