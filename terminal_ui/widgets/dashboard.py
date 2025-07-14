@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Optional, List
 
 from textual.widgets import Static, Label
-from textual.containers import Container, Horizontal, Vertical
+from textual.containers import Container, Horizontal, Vertical, ScrollableContainer
 from textual.reactive import reactive
 from rich.text import Text
 from rich.table import Table
@@ -29,11 +29,14 @@ class DashboardWidget(Static):
         
     def compose(self):
         """Compose the dashboard layout."""
-        yield Container(
-            self.create_overview_panel(),
-            self.create_quick_stats_panel(),
-            self.create_recent_activity_panel(),
-            classes="dashboard-overview"
+        yield ScrollableContainer(
+            Container(
+                self.create_overview_panel(),
+                self.create_quick_stats_panel(),
+                self.create_recent_activity_panel(),
+                classes="dashboard-overview"
+            ),
+            classes="dashboard-scrollable"
         )
     
     def create_overview_panel(self) -> Static:
@@ -70,7 +73,7 @@ class DashboardWidget(Static):
         stats_panel = self.create_updated_stats_panel()
         activity_panel = self.create_updated_activity_panel()
         
-        # Add to container
+        # Add to scrollable container
         container = Container(
             overview_panel,
             stats_panel,
@@ -78,7 +81,12 @@ class DashboardWidget(Static):
             classes="dashboard-overview"
         )
         
-        await self.mount(container)
+        scrollable = ScrollableContainer(
+            container,
+            classes="dashboard-scrollable"
+        )
+        
+        await self.mount(scrollable)
     
     def create_updated_overview_panel(self) -> Static:
         """Create updated overview panel with agent data."""
@@ -86,13 +94,13 @@ class DashboardWidget(Static):
             content = Text("No agent data available", style="red")
             return Static(Panel(content, title="Agent Overview", border_style="red"), classes="dashboard-stats")
         
-        # Create rich text content
+        # Create rich text content with responsive formatting
         content = Text()
         content.append(f"Agent: ", style="bold")
         content.append(f"{self.agent_data.symbol}\\n", style="cyan")
         content.append(f"Credits: ", style="bold")
         content.append(f"{self.agent_data.credits:,}\\n", style="green")
-        content.append(f"Headquarters: ", style="bold")
+        content.append(f"HQ: ", style="bold")  # Shortened for small screens
         content.append(f"{self.agent_data.headquarters}\\n", style="blue")
         content.append(f"Faction: ", style="bold")
         content.append(f"{self.agent_data.startingFaction}\\n", style="magenta")
@@ -133,18 +141,25 @@ class DashboardWidget(Static):
             content = Text("No ship data available", style="dim")
             return Static(Panel(content, title="Recent Activity", border_style="yellow"), classes="dashboard-stats")
         
-        # Create activity summary
+        # Create activity summary with responsive formatting
         content = Text()
         content.append("Ship Status:\\n", style="bold")
         
-        for ship in self.ships_data[:5]:  # Show first 5 ships
+        # Show fewer ships if we have many, to keep content manageable
+        display_ships = self.ships_data[:3]  # Show first 3 ships instead of 5
+        
+        for ship in display_ships:
             if ship.nav:
                 status_color = "green" if ship.nav.status == "DOCKED" else "yellow" if ship.nav.status == "IN_TRANSIT" else "red"
-                content.append(f"  {ship.symbol}: ", style="white")
+                # Truncate long ship names and waypoint names for small screens
+                ship_name = ship.symbol[:12] + "..." if len(ship.symbol) > 15 else ship.symbol
+                waypoint_name = ship.nav.waypointSymbol[-10:] if len(ship.nav.waypointSymbol) > 10 else ship.nav.waypointSymbol
+                
+                content.append(f"  {ship_name}: ", style="white")
                 content.append(f"{ship.nav.status}", style=status_color)
-                content.append(f" at {ship.nav.waypointSymbol}\\n", style="dim")
+                content.append(f" at {waypoint_name}\\n", style="dim")
         
-        if len(self.ships_data) > 5:
-            content.append(f"\\n... and {len(self.ships_data) - 5} more ships", style="dim")
+        if len(self.ships_data) > 3:
+            content.append(f"\\n... and {len(self.ships_data) - 3} more", style="dim")
         
         return Static(Panel(content, title="Recent Activity", border_style="yellow"), classes="dashboard-stats")

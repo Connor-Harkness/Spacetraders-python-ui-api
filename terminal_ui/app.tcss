@@ -55,6 +55,8 @@ Tab.-active {
     border: solid #89b4fa;
     margin: 1;
     padding: 1;
+    height: auto;
+    min-height: 5;
 }
 
 .dashboard-overview {
@@ -62,6 +64,7 @@ Tab.-active {
     border: solid #f38ba8;
     margin: 1;
     padding: 1;
+    height: auto;
 }
 
 /* Ship styles */
@@ -70,6 +73,13 @@ Tab.-active {
     border: solid #a6e3a1;
     margin: 1;
     padding: 1;
+    height: auto;
+    min-height: 8;
+}
+
+.ship-container {
+    margin-bottom: 1;
+    height: auto;
 }
 
 .ship-header {
@@ -85,12 +95,20 @@ Tab.-active {
     color: #89b4fa;
 }
 
+/* Responsive ship buttons */
+.ship-button {
+    min-width: 6;
+    max-width: 10;
+}
+
 /* Contract styles */
 .contract-card {
     background: #313244;
     border: solid #fab387;
     margin: 1;
     padding: 1;
+    height: auto;
+    min-height: 6;
 }
 
 .contract-header {
@@ -116,6 +134,8 @@ Tab.-active {
     border: solid #f5c2e7;
     margin: 1;
     padding: 1;
+    height: auto;
+    min-height: 10;
 }
 
 .agent-header {
@@ -172,9 +192,22 @@ Button.-danger:hover {
 }
 
 /* Scrollable content */
-.scrollable {
+.scrollable, .dashboard-scrollable, .ships-scrollable, .contracts-scrollable, .agent-scrollable, .shipyard-scrollable {
     scrollbar-background: #313244;
     scrollbar-color: #89b4fa;
+    height: 100%;
+}
+
+/* Responsive content containers */
+.dashboard-overview, .ships-content, .contracts-content, .agent-info, .shipyard-content {
+    height: auto;
+    min-height: 100%;
+}
+
+/* Responsive ship containers */
+.ship-container {
+    margin-bottom: 1;
+    height: auto;
 }
 
 /* Progress bars */
@@ -187,6 +220,7 @@ ProgressBar {
 .shipyard-container {
     background: #1e1e2e;
     padding: 1;
+    height: auto;
 }
 
 .system-selector {
@@ -195,16 +229,20 @@ ProgressBar {
     margin-bottom: 1;
     border: solid #89b4fa;
     border-title-color: #f9e2af;
+    height: auto;
+    min-height: 3;
 }
 
 .shipyard-content {
     background: #1e1e2e;
     padding: 1;
+    height: auto;
 }
 
 .shipyard-scrollable {
     background: #1e1e2e;
     padding: 1;
+    height: auto;
 }
 
 .shipyard-card {
@@ -212,17 +250,22 @@ ProgressBar {
     color: #cdd6f4;
     margin-bottom: 1;
     border: solid #89b4fa;
+    height: auto;
+    min-height: 8;
 }
 
 .shipyard-card-container {
     background: #1e1e2e;
     margin-bottom: 1;
+    height: auto;
 }
 
 .shipyard-button {
     background: #89b4fa;
     color: #1e1e2e;
     margin-right: 1;
+    min-width: 8;
+    max-width: 12;
 }
 
 .shipyard-button:hover {
@@ -251,4 +294,6 @@ ProgressBar {
     background: #45475a;
     color: #cdd6f4;
     border: solid #89b4fa;
+    min-width: 20;
+    max-width: 40;
 }

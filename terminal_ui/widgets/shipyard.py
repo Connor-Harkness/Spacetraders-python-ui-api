@@ -47,9 +47,12 @@ class ShipyardWidget(Static):
         
     def compose(self):
         """Compose the shipyard layout."""
-        yield Container(
-            Label("Loading shipyards...", classes="shipyard-header"),
-            classes="scrollable"
+        yield ScrollableContainer(
+            Container(
+                Label("Loading shipyards...", classes="shipyard-header"),
+                classes="shipyard-content"
+            ),
+            classes="shipyard-scrollable"
         )
     
     async def update_data(self, systems_data: Optional[List[System]], shipyards_data: Optional[Dict[str, Shipyard]]):
@@ -66,9 +69,13 @@ class ShipyardWidget(Static):
         if not self.systems_data:
             container = Container(
                 Label("No systems data available", classes="shipyard-header"),
-                classes="scrollable"
+                classes="shipyard-content"
             )
-            await self.mount(container)
+            scrollable = ScrollableContainer(
+                container,
+                classes="shipyard-scrollable"
+            )
+            await self.mount(scrollable)
             return
         
         # Create system selector and shipyard content
@@ -82,7 +89,12 @@ class ShipyardWidget(Static):
             classes="shipyard-container"
         )
         
-        await self.mount(main_container)
+        scrollable = ScrollableContainer(
+            main_container,
+            classes="shipyard-scrollable"
+        )
+        
+        await self.mount(scrollable)
     
     def create_system_selector(self) -> Container:
         """Create system selection interface."""
