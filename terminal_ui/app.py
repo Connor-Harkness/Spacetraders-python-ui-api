@@ -75,6 +75,27 @@ class SpaceTradersApp(App):
         
         yield Footer()
     
+    async def on_resize(self, event) -> None:
+        """Handle terminal resize events."""
+        # Refresh the display to adapt to new terminal size
+        await self.refresh_display()
+        
+    async def refresh_display(self) -> None:
+        """Refresh the display to adapt to current terminal size."""
+        # Update all widgets to adapt to the new size
+        dashboard = self.query_one("#dashboard_content", DashboardWidget)
+        ships_widget = self.query_one("#ships_content", ShipWidget)
+        contracts_widget = self.query_one("#contracts_content", ContractWidget)
+        agent_widget = self.query_one("#agent_content", AgentWidget)
+        shipyard_widget = self.query_one("#shipyard_content", ShipyardWidget)
+        
+        # Re-render each widget with current data
+        await dashboard.update_data(self.agent_data, self.ships_data, self.contracts_data)
+        await ships_widget.update_data(self.ships_data)
+        await contracts_widget.update_data(self.contracts_data)
+        await agent_widget.update_data(self.agent_data)
+        await shipyard_widget.update_data(self.systems_data, self.shipyards_data)
+        
     async def on_mount(self) -> None:
         """Initialize the application."""
         await self.initialize_client()

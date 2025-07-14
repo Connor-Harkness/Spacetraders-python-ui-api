@@ -5,7 +5,7 @@ Agent widget for agent information and settings.
 from typing import Optional
 
 from textual.widgets import Static, Button, Label
-from textual.containers import Container, Horizontal, Vertical
+from textual.containers import Container, Horizontal, Vertical, ScrollableContainer
 from textual.reactive import reactive
 from rich.text import Text
 from rich.table import Table
@@ -26,9 +26,12 @@ class AgentWidget(Static):
         
     def compose(self):
         """Compose the agent layout."""
-        yield Container(
-            Label("Loading agent data...", classes="agent-header"),
-            classes="agent-info"
+        yield ScrollableContainer(
+            Container(
+                Label("Loading agent data...", classes="agent-header"),
+                classes="agent-info"
+            ),
+            classes="agent-scrollable"
         )
     
     async def update_data(self, agent_data: Optional[Agent]):
@@ -46,7 +49,11 @@ class AgentWidget(Static):
                 Label("No agent data available", classes="agent-header"),
                 classes="agent-info"
             )
-            await self.mount(container)
+            scrollable = ScrollableContainer(
+                container,
+                classes="agent-scrollable"
+            )
+            await self.mount(scrollable)
             return
         
         # Create agent information display
@@ -59,7 +66,12 @@ class AgentWidget(Static):
             classes="agent-info"
         )
         
-        await self.mount(container)
+        scrollable = ScrollableContainer(
+            container,
+            classes="agent-scrollable"
+        )
+        
+        await self.mount(scrollable)
     
     def create_agent_info_panel(self) -> Container:
         """Create the agent information panel."""

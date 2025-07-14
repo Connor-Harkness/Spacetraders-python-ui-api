@@ -53,9 +53,12 @@ class ContractWidget(Static):
         
     def compose(self):
         """Compose the contracts layout."""
-        yield Container(
-            Label("Loading contracts...", classes="contract-header"),
-            classes="scrollable"
+        yield ScrollableContainer(
+            Container(
+                Label("Loading contracts...", classes="contract-header"),
+                classes="contracts-content"
+            ),
+            classes="contracts-scrollable"
         )
     
     async def update_data(self, contracts_data: Optional[List[Contract]]):
@@ -71,9 +74,13 @@ class ContractWidget(Static):
         if not self.contracts_data:
             container = Container(
                 Label("No contracts available", classes="contract-header"),
-                classes="scrollable"
+                classes="contracts-content"
             )
-            await self.mount(container)
+            scrollable = ScrollableContainer(
+                container,
+                classes="contracts-scrollable"
+            )
+            await self.mount(scrollable)
             return
         
         # Create contract cards
@@ -83,9 +90,14 @@ class ContractWidget(Static):
             contract_cards.append(card)
         
         # Create scrollable container
-        scrollable = ScrollableContainer(
+        container = Container(
             *contract_cards,
-            classes="scrollable"
+            classes="contracts-content"
+        )
+        
+        scrollable = ScrollableContainer(
+            container,
+            classes="contracts-scrollable"
         )
         
         await self.mount(scrollable)
