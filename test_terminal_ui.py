@@ -91,6 +91,62 @@ def test_utilities():
         print(f"❌ Utility functions test failed: {e}")
         return False
 
+def test_contracts_datetime_fix():
+    """Test that contracts widget can handle timezone-aware datetime objects."""
+    try:
+        from datetime import datetime, timezone
+        from terminal_ui.widgets.contracts import ContractWidget
+        from spacetraders_client.models import Contract, ContractTerms, ContractPayment, ContractDeliverGood
+        
+        # Create a timezone-aware datetime (as the API would return)
+        api_datetime = datetime.now(timezone.utc)
+        
+        # Create contract terms with timezone-aware deadline
+        terms = ContractTerms(
+            deadline=api_datetime,
+            payment=ContractPayment(onAccepted=1000, onFulfilled=5000),
+            deliver=[
+                ContractDeliverGood(
+                    tradeSymbol="IRON_ORE",
+                    destinationSymbol="X1-ZZ9-A1",
+                    unitsRequired=100,
+                    unitsFulfilled=50
+                )
+            ]
+        )
+        
+        # Create a mock contract
+        contract = Contract(
+            id="test-contract-001",
+            factionSymbol="COSMIC",
+            type="PROCUREMENT",
+            terms=terms,
+            accepted=True,
+            fulfilled=False,
+            expiration=api_datetime,
+            deadlineToAccept=api_datetime
+        )
+        
+        # Create the contract widget 
+        widget = ContractWidget()
+        
+        # Test creating the contract card - this should not raise the datetime error
+        card = widget.create_contract_card(contract)
+        
+        # Test the specific datetime calculation that was causing the error
+        time_remaining = contract.terms.deadline - datetime.now(timezone.utc)
+        
+        print("✅ Contracts datetime fix test successful")
+        print(f"    - Contract deadline timezone: {contract.terms.deadline.tzinfo}")
+        print(f"    - Current time timezone: {datetime.now(timezone.utc).tzinfo}")
+        print(f"    - Time remaining calculation: {time_remaining}")
+        
+        return True
+        
+    except Exception as e:
+        print(f"❌ Contracts datetime fix test failed: {e}")
+        return False
+
 def main():
     """Run all tests."""
     print("🚀 SpaceTraders Terminal UI - Component Tests")
@@ -100,7 +156,8 @@ def main():
         ("Import Tests", test_imports),
         ("Terminal UI Creation", test_terminal_ui_creation),
         ("Automation Manager", test_automation_manager),
-        ("Utility Functions", test_utilities)
+        ("Utility Functions", test_utilities),
+        ("Contracts DateTime Fix", test_contracts_datetime_fix)
     ]
     
     passed = 0

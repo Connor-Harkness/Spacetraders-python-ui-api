@@ -3,7 +3,7 @@ Contracts widget for contract management.
 """
 
 from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, timezone
 
 from textual.widgets import Static, Button, Label
 from textual.containers import Container, Horizontal, Vertical, ScrollableContainer
@@ -112,7 +112,7 @@ class ContractWidget(Static):
         deadline_str = contract.terms.deadline.strftime("%Y-%m-%d %H:%M:%S")
         
         # Color code based on time remaining
-        time_remaining = contract.terms.deadline - datetime.now()
+        time_remaining = contract.terms.deadline - datetime.now(timezone.utc)
         if time_remaining.days < 1:
             deadline_color = "red"
         elif time_remaining.days < 3:
