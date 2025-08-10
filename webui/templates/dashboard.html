@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <!-- Header with refresh info -->
+    <div class="dashboard-header">
+        <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+        <div class="refresh-info">
+            <i class="fas fa-sync-alt"></i>
+            Auto-refresh: {{ config.REFRESH_INTERVAL }}s
+        </div>
+    </div>
+
+    <!-- Agent Information -->
+    <div class="card">
+        <div class="card-header">
+            <h2><i class="fas fa-user-astronaut"></i> Agent Information</h2>
+        </div>
+        <div class="card-content">
+            <div class="agent-info">
+                <div class="info-item">
+                    <span class="label">Symbol:</span>
+                    <span class="value">{{ agent.symbol }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Credits:</span>
+                    <span class="value credits">{{ "{:,}".format(agent.credits) }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Headquarters:</span>
+                    <span class="value">{{ agent.headquarters }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Starting Faction:</span>
+                    <span class="value">{{ agent.startingFaction }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Ship Count:</span>
+                    <span class="value">{{ agent.shipCount }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fleet Overview -->
+    <div class="card">
+        <div class="card-header">
+            <h2><i class="fas fa-rocket"></i> Fleet Overview</h2>
+            <span class="badge">{{ ships|length }} / {{ ships_meta.total if ships_meta.total else 'N/A' }} ships</span>
+        </div>
+        <div class="card-content">
+            {% if ships %}
+                <div class="ships-grid">
+                    {% for ship in ships %}
+                    <div class="ship-card">
+                        <div class="ship-header">
+                            <h3>{{ ship.registration.name }}</h3>
+                            <span class="ship-role">{{ ship.registration.role }}</span>
+                        </div>
+                        <div class="ship-info">
+                            <div class="info-row">
+                                <span class="label">Location:</span>
+                                <span class="value">{{ ship.nav.waypointSymbol }}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Status:</span>
+                                <span class="value status-{{ ship.nav.status.lower() }}">{{ ship.nav.status }}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Fuel:</span>
+                                <span class="value">{{ ship.fuel.current }} / {{ ship.fuel.capacity }}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Cargo:</span>
+                                <span class="value">{{ ship.cargo.units }} / {{ ship.cargo.capacity }}</span>
+                            </div>
+                        </div>
+                        <div class="ship-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill fuel" style="width: {{ (ship.fuel.current / ship.fuel.capacity * 100) if ship.fuel.capacity > 0 else 0 }}%"></div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill cargo" style="width: {{ (ship.cargo.units / ship.cargo.capacity * 100) if ship.cargo.capacity > 0 else 0 }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-rocket"></i>
+                    <p>No ships found</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Contracts Overview -->
+    <div class="card">
+        <div class="card-header">
+            <h2><i class="fas fa-file-contract"></i> Contracts Overview</h2>
+            <span class="badge">{{ contracts|length }} contracts</span>
+        </div>
+        <div class="card-content">
+            {% if contracts %}
+                <div class="contracts-list">
+                    {% for contract in contracts %}
+                    <div class="contract-card">
+                        <div class="contract-header">
+                            <h3>{{ contract.type }} Contract</h3>
+                            <div class="contract-status">
+                                {% if contract.accepted %}
+                                    {% if contract.fulfilled %}
+                                        <span class="status fulfilled">Fulfilled</span>
+                                    {% else %}
+                                        <span class="status accepted">Accepted</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="status pending">Pending</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="contract-info">
+                            <div class="info-row">
+                                <span class="label">Faction:</span>
+                                <span class="value">{{ contract.factionSymbol }}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Deadline:</span>
+                                <span class="value">{{ contract.terms.deadline.split('T')[0] if contract.terms.deadline else 'N/A' }}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Payment:</span>
+                                <span class="value credits">{{ "{:,}".format(contract.terms.payment.onAccepted + contract.terms.payment.onFulfilled) }}</span>
+                            </div>
+                        </div>
+                        {% if contract.terms.deliver %}
+                            <div class="contract-deliveries">
+                                <h4>Deliveries:</h4>
+                                {% for delivery in contract.terms.deliver %}
+                                <div class="delivery-item">
+                                    <span class="item-name">{{ delivery.tradeSymbol }}</span>
+                                    <span class="item-progress">{{ delivery.unitsFulfilled }} / {{ delivery.unitsRequired }}</span>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: {{ (delivery.unitsFulfilled / delivery.unitsRequired * 100) if delivery.unitsRequired > 0 else 0 }}%"></div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-file-contract"></i>
+                    <p>No contracts found</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Server Status -->
+    <div class="card">
+        <div class="card-header">
+            <h2><i class="fas fa-server"></i> Server Status</h2>
+        </div>
+        <div class="card-content">
+            <div class="server-info">
+                <div class="info-item">
+                    <span class="label">Status:</span>
+                    <span class="value status-{{ server_status.status.lower() if server_status.status else 'unknown' }}">{{ server_status.status or 'Unknown' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Version:</span>
+                    <span class="value">{{ server_status.version or 'Unknown' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Reset Date:</span>
+                    <span class="value">{{ server_status.resetDate.split('T')[0] if server_status.resetDate else 'Unknown' }}</span>
+                </div>
+                {% if server_status.stats %}
+                <div class="info-item">
+                    <span class="label">Total Agents:</span>
+                    <span class="value">{{ "{:,}".format(server_status.stats.agents) }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Total Ships:</span>
+                    <span class="value">{{ "{:,}".format(server_status.stats.ships) }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Auto-refresh functionality
+    setInterval(function() {
+        location.reload();
+    }, {{ config.REFRESH_INTERVAL * 1000 }});
+</script>
+{% endblock %}
