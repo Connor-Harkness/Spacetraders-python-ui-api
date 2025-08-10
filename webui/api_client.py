@@ -5,8 +5,8 @@ Rate-limited SpaceTraders API client for the WebUI.
 import asyncio
 import httpx
 from typing import Dict, List, Optional, Any, Union
-from .config import Config
-from .rate_limiter import RateLimiter, rate_limited
+from config import Config
+from rate_limiter import RateLimiter, rate_limited
 
 class SpaceTradersAPIClient:
     """Rate-limited SpaceTraders API client."""

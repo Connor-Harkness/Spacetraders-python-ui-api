@@ -7,8 +7,8 @@ import os
 from threading import Thread
 from typing import Dict, Any, Optional
 from flask import Flask, render_template, jsonify, request
-from .config import Config
-from .api_client import SpaceTradersAPIClient
+from config import Config
+from api_client import SpaceTradersAPIClient
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -32,10 +32,12 @@ def initialize_client():
     Config.validate()
     api_client = SpaceTradersAPIClient(Config.SPACETRADERS_TOKEN)
 
-@app.before_first_request
+@app.before_request
 def setup():
-    """Setup the application before the first request."""
-    initialize_client()
+    """Setup the application before each request if not already initialized."""
+    global api_client
+    if api_client is None:
+        initialize_client()
 
 @app.route('/')
 def dashboard():

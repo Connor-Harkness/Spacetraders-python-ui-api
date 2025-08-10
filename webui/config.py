@@ -29,6 +29,8 @@ class Config:
     @classmethod
     def validate(cls) -> None:
         """Validate required configuration settings."""
+        # Re-read the environment variable in case it was set after import
+        cls.SPACETRADERS_TOKEN = os.getenv("SPACETRADERS_TOKEN")
         if not cls.SPACETRADERS_TOKEN:
             raise ValueError(
                 "SPACETRADERS_TOKEN environment variable is required. "
