@@ -1,6 +1,14 @@
-# SpaceTraders Terminal UI
+# SpaceTraders Python UI API
 
-A comprehensive terminal user interface for the SpaceTraders Python API client, providing interactive fleet management, contract automation, and resource management capabilities.
+A comprehensive Python client and user interface collection for the SpaceTraders API, providing both terminal and web interfaces for fleet management, contract automation, and resource management.
+
+## Projects
+
+### 🖥️ Terminal UI
+A comprehensive terminal user interface providing interactive fleet management, contract automation, and resource management capabilities.
+
+### 🌐 Web UI (NEW!)
+A standalone web interface providing a clean dashboard view of your SpaceTraders account with real-time data and responsive design.
 
 ## Features
 
@@ -37,6 +45,8 @@ A comprehensive terminal user interface for the SpaceTraders Python API client, 
 
 ## Installation
 
+### Terminal UI
+
 1. Install the required dependencies:
    ```bash
    pip install -r spacetraders_client/requirements.txt
@@ -52,7 +62,37 @@ A comprehensive terminal user interface for the SpaceTraders Python API client, 
    python main.py
    ```
 
+### Web UI
+
+1. Navigate to the webui directory:
+   ```bash
+   cd webui
+   ```
+
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. Set your API token and run:
+   ```bash
+   export SPACETRADERS_TOKEN="your_token_here"
+   python run.py
+   ```
+
+4. Open your browser to: `http://localhost:5000`
+
 ## Usage
+
+### Web UI
+The web interface provides:
+- **Dashboard**: Overview of agent, fleet, and contracts
+- **Real-time Data**: Auto-refreshing every 30 seconds
+- **Rate Limited**: Respects 2 req/sec API limits
+- **Responsive Design**: Works on desktop and mobile
+- **RESTful API**: JSON endpoints for integration
+
+### Terminal UI
 
 ### Basic Navigation
 - **Tab**: Switch between Dashboard, Ships, Contracts, and Agent views
